@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nutri BakeShop — Customer Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --bg-color: #f4f7f5;
+        --card-bg: #ffffff;
+        --primary-green: #108043;
+        --primary-green-hover: #0d6e39;
+        --primary-green-light: #e6f4ea;
+        --text-dark: #202223;
+        --text-muted: #6d7175;
+        --border-color: #e1e3e5;
+        --accent-orange: #d97706;
+        --accent-orange-light: #fdf1e0;
+        --accent-red: #d92d20;
+        --accent-red-light: #fbe9e7;
+        --border-radius: 12px;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+    body { background-color: var(--bg-color); color: var(--text-dark); }
+
+    /* ---- top nav ---- */
+    .topnav {
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border-color);
+        display: flex; align-items: center; justify-content: flex-start;
+        padding: 10px 42px;
+    }
+    .logo { font-weight: 700; font-size: 18px; color: var(--primary-green); margin-right: 32px; }
+    .nav-links { display: flex; align-items: center; gap: 2px; }
+    .nav-links a {
+        text-decoration: none; color: var(--text-dark); font-size: 13px; font-weight: 500;
+        padding: 7px 12px; border-radius: 999px; cursor: pointer;
+    }
+    .nav-links a:hover { background: var(--bg-color); }
+    .nav-links a.active { background: var(--primary-green-light); color: var(--primary-green); font-weight: 600; }
+    .avatar {
+        width: 36px; height: 36px; border-radius: 50%; background: var(--primary-green-light);
+        color: var(--primary-green); display: flex; align-items: center; justify-content: center;
+        font-weight: 700; font-size: 13px; flex: none;
+    }
+
+    /* ---- page header ---- */
+    .page-wrap { max-width: 1048px; margin: 0 auto; padding: 36px 24px 60px; }
+    .eyebrow { font-size: 12px; font-weight: 700; color: var(--primary-green); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; }
+    .page-title { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+    .page-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+
+    /* ---- card ---- */
+    .card { background: var(--card-bg); border-radius: var(--border-radius); box-shadow: var(--shadow); padding: 26px; margin-bottom: 20px; }
+    .card h3 { font-size: 15px; font-weight: 700; margin-bottom: 16px; }
+
+    .field-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; margin: 0 0 6px; display: block; }
+    .field-group { margin-bottom: 16px; }
+    input, select, textarea {
+        width: 100%; font-size: 14px; color: var(--text-dark);
+        background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px;
+        padding: 10px 12px; outline: none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--primary-green); }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .summary-box { background: var(--bg-color); border-radius: 10px; padding: 14px 16px; margin: 6px 0 20px; }
+    .summary-row { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; }
+    .summary-row .muted { color: var(--text-muted); }
+    .summary-row .accent { color: var(--primary-green); font-weight: 700; }
+    .summary-row.total { border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 4px; }
+
+    .btn { font-size: 14px; font-weight: 600; border-radius: 8px; padding: 11px 22px; cursor: pointer; border: none; }
+    .btn-primary { background: var(--primary-green); color: #fff; }
+    .btn-primary:hover { background: var(--primary-green-hover); }
+    .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-dark); }
+    .btn-row { display: flex; justify-content: flex-end; gap: 10px; }
+
+    .toggle-row { display: flex; gap: 10px; margin-bottom: 18px; }
+    .toggle-btn { flex: 1; background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 8px; font-weight: 600; font-size: 13px; padding: 10px; cursor: pointer; }
+    .toggle-btn.active { border-color: var(--accent-red); color: var(--accent-red); background: var(--accent-red-light); }
+
+    .warn-box { background: var(--accent-orange-light); color: var(--accent-orange); border-radius: 8px; padding: 10px 14px; font-size: 12.5px; margin-bottom: 18px; line-height: 1.5; }
+    .error-text { color: var(--accent-red); font-size: 12px; margin-top: 4px; display: none; }
+
+    .status-pill { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    .status-confirmed { background: var(--accent-orange-light); color: var(--accent-orange); }
+    .status-paid { background: var(--primary-green-light); color: var(--primary-green); }
+    .status-pending { background: var(--accent-red-light); color: var(--accent-red); }
+
+    /* ---- search ---- */
+    .search-wrap { position: relative; margin-bottom: 16px; }
+    .search-wrap input { padding-left: 34px; }
+    .search-icon {
+        position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+        width: 14px; height: 14px; color: var(--text-muted); pointer-events: none;
+    }
+    .search-empty { font-size: 12.5px; color: var(--text-muted); margin: -8px 0 16px; display: none; }
+
+    /* ---- tracking ---- */
+    .ref-line { font-size: 13px; color: var(--text-muted); margin-bottom: 18px; }
+    .stepper { display: flex; align-items: center; margin: 6px 0 8px; }
+    .step-dot { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--border-color); color: var(--text-muted); font-size: 12px; flex: none; }
+    .step-dot.done { background: var(--primary-green); color: #fff; }
+    .step-dot.current { background: var(--accent-orange); color: #fff; }
+    .step-line { flex: 1; height: 2px; background: var(--border-color); }
+    .step-line.done { background: var(--primary-green); }
+    .step-labels { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--text-muted); margin: 0 0 20px; text-align: center; }
+    .step-labels span { width: 56px; }
+
+    .stub-note { text-align: center; color: var(--text-muted); padding: 50px 16px; font-size: 13.5px; }
+
+    /* ---- customer info profile ---- */
+    .profile-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+    .avatar-lg { width: 56px; height: 56px; font-size: 18px; }
+    .profile-name { font-size: 16px; font-weight: 700; }
+    .profile-role { font-size: 13px; color: var(--text-muted); }
+    .divider { border: none; border-top: 1px solid var(--border-color); margin: 0 0 20px; }
+    .section-heading { font-size: 15px; font-weight: 700; margin-bottom: 16px; }
+    .stats-box { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--bg-color); border-radius: 10px; padding: 16px 20px; margin: 6px 0 20px; }
+    .stats-box .stat { padding: 0 16px; border-right: 1px solid var(--border-color); }
+    .stats-box .stat:first-child { padding-left: 0; }
+    .stats-box .stat:last-child { border-right: none; }
+    .stat-label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+    .stat-value { display: block; font-size: 18px; font-weight: 700; color: var(--primary-green); }
+
+    /* ---- customer information screenshot layout ---- */
+    .customer-info-card { padding: 30px; }
+    .customer-info-card .profile-header { margin-bottom: 24px; }
+    .customer-info-card .profile-name { font-size: 18px; }
+    .customer-info-card .profile-role { font-size: 12px; margin-top: 2px; }
+    .customer-info-card .divider { margin-bottom: 24px; }
+    .customer-info-card .section-heading { font-size: 14px; margin-bottom: 18px; }
+    .customer-info-card .field-label { font-size: 10px; color: #60758b; margin-bottom: 7px; }
+    .customer-info-card .field-group { margin-bottom: 16px; }
+    .customer-info-card input { background: #fff; height: 42px; padding: 10px 12px; }
+    .customer-info-card .stats-box { margin-top: 14px; margin-bottom: 24px; padding: 16px 18px; background: #f4f8f5; }
+    .customer-info-card .stat { padding: 0 18px; }
+    .customer-info-card .stat-label { font-size: 11px; }
+    .customer-info-card .stat-value { font-size: 18px; }
+    .customer-info-card .btn-row { gap: 10px; }
+    .customer-info-card .btn { min-width: 74px; }
+    .customer-info-card .btn-primary { min-width: 118px; }
+    @media (max-width: 720px){ .stats-box { grid-template-columns: 1fr; row-gap: 12px; } .stats-box .stat { border-right: none; padding: 0; } }
+
+    .toast {
+        position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px);
+        background: var(--text-dark); color: var(--bg-color); padding: 10px 20px; border-radius: 999px; font-size: 13px;
+        opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; white-space: nowrap; z-index: 60;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    @media (max-width: 720px) {
+        .nav-links { display: none; }
+        .row2 { grid-template-columns: 1fr; }
+    }
+</style>
+</head>
+<body>
+
+<div class="topnav">
+    <div class="logo">Nutri BakeShop</div>
+    <nav class="nav-links">
+        <a data-page="home" class="active">Home</a>
+        <a data-page="menu">Menu</a>
+        <a data-page="reservation">Reservation</a>
+        <a data-page="customization">Customization</a>
+        <a data-page="amendment">Cancellation / Amendment</a>
+        <a data-page="tracking">Trackings</a>
+        <a data-page="customerinfo">Customer Info</a>
+    </nav>
+</div>
+
+<div class="page-wrap">
+
+    <!-- ================= RESERVATION PAGE ================= -->
+    <section class="page" id="page-reservation">
+        <p class="eyebrow">Reserve a cake</p>
+        <h1 class="page-title">New Reservation</h1>
+        <p class="page-subtitle">Fill out the details below to book your cake in advance.</p>
+
+        <div class="card">
+            <h3>Reservation Details</h3>
+            <div class="field-group"><label class="field-label">Customer name</label><input type="text" id="r-name" placeholder="Juan Dela Cruz"></div>
+            <div class="field-group"><label class="field-label">Contact number</label><input type="tel" id="r-contact" placeholder="09XX XXX XXXX"></div>
+            <div class="field-group">
+                <label class="field-label">Date and time needed</label>
+                <div class="row2"><input type="date" id="r-date"><input type="time" id="r-time"></div>
+            </div>
+            <div class="field-group"><label class="field-label">Cake design</label><input type="text" id="r-design" placeholder="e.g. 2-tier fondant, floral"></div>
+            <div class="field-group">
+                <div class="row2">
+                    <div><label class="field-label">Flavor</label><input type="text" id="r-flavor" placeholder="e.g. red velvet"></div>
+                    <div><label class="field-label">Motif / color</label><input type="text" id="r-motif" placeholder="e.g. gold and cream"></div>
+                </div>
+            </div>
+            <div class="field-group"><label class="field-label">Dedication</label><input type="text" id="r-dedication" placeholder="e.g. Happy 18th, Mia!"></div>
+            <p class="error-text" id="r-name-error">Enter your name first.</p>
+
+            <div class="btn-row">
+                <button class="btn btn-outline" id="btn-clear-res">Clear</button>
+                <button class="btn btn-primary" id="btn-confirm-res">Confirm Reservation</button>
+            </div>
+        </div>
+
+        <div class="card" id="reservation-status-card" style="display:none;">
+            <h3>Your Latest Reservation</h3>
+            <div class="summary-row"><span class="muted">Reference</span><span id="res-ref">—</span></div>
+            <div class="summary-row"><span class="muted">Status</span><span class="status-pill status-pending" id="res-status">Pending Confirmation</span></div>
+        </div>
+    </section>
+
+    <!-- ================= CANCELLATION / AMENDMENT PAGE ================= -->
+    <section class="page" id="page-amendment">
+        <p class="eyebrow">Manage your order</p>
+        <h1 class="page-title">Cancellation / Amendment</h1>
+        <p class="page-subtitle">Request a change to your reservation, or cancel it if plans have changed.</p>
+
+        <div class="card">
+            <h3>Send a Request</h3>
+            <div class="field-group">
+                <label class="field-label">Search your reservation</label>
+                <div class="search-wrap">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" id="a-search" placeholder="Search by reference number or cake design">
+                </div>
+                <label class="field-label">Select your reservation</label>
+                <select id="a-ref">
+                    <option value="NB-2026-0031" data-search="NB-2026-0031 2-Tier Fondant Floral">NB-2026-0031 — 2-Tier Fondant, Floral (Oct 5, 2026)</option>
+                    <option value="NB-2026-0033" data-search="NB-2026-0033 Custom Wedding Cake">NB-2026-0033 — Custom Wedding Cake (Oct 10, 2026)</option>
+                </select>
+                <p class="search-empty" id="a-search-empty">No reservations match your search.</p>
+            </div>
+            <div class="toggle-row">
+                <button class="toggle-btn active" id="btn-mode-amend">Amend</button>
+                <button class="toggle-btn" id="btn-mode-cancel">Cancel Order</button>
+            </div>
+
+            <div id="amend-fields">
+                <div class="field-group">
+                    <label class="field-label">New date and time</label>
+                    <div class="row2"><input type="date" id="a-date"><input type="time" id="a-time"></div>
+                </div>
+                <div class="field-group"><label class="field-label">New design or dedication</label><input type="text" id="a-details" placeholder="What would you like changed?"></div>
+            </div>
+            <div id="cancel-fields" style="display:none;">
+                <div class="field-group"><label class="field-label">Reason (optional)</label><textarea id="a-reason" rows="3" placeholder="Let us know why you're cancelling"></textarea></div>
+            </div>
+
+            <div class="warn-box" id="a-warning">Changes made close to the original pick-up date may not be accommodated.</div>
+            <div class="btn-row"><button class="btn btn-primary" id="btn-submit-amend">Submit Request</button></div>
+        </div>
+
+        <div class="card" id="request-status-card" style="display:none;">
+            <h3>Your Latest Request</h3>
+            <div class="summary-row"><span class="muted">Reference</span><span id="req-ref">—</span></div>
+            <div class="summary-row"><span class="muted">Request type</span><span id="req-type">—</span></div>
+            <div class="summary-row"><span class="muted">Status</span><span class="status-pill status-pending" id="req-status">Pending Review</span></div>
+        </div>
+    </section>
+
+    <!-- ================= TRACKING PAGE ================= -->
+    <section class="page" id="page-tracking">
+        <p class="eyebrow">Track your order</p>
+        <h1 class="page-title">Order Status</h1>
+        <p class="page-subtitle">See how your reservation is progressing, in real time.</p>
+
+        <div class="card">
+            <div class="field-group">
+                <label class="field-label">Search your reservation</label>
+                <div class="search-wrap">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" id="t-search" placeholder="Search by reference number or cake design">
+                </div>
+                <label class="field-label">Select your reservation</label>
+                <select id="t-ref">
+                    <option value="0" data-search="NB-2026-0031 2-Tier Fondant Floral">NB-2026-0031 — 2-Tier Fondant, Floral</option>
+                    <option value="1" data-search="NB-2026-0033 Custom Wedding Cake">NB-2026-0033 — Custom Wedding Cake</option>
+                </select>
+                <p class="search-empty" id="t-search-empty">No reservations match your search.</p>
+            </div>
+            <p class="ref-line" id="t-refline">Ref. NB-2026-0031</p>
+
+            <div class="stepper" id="stepper"></div>
+            <div class="step-labels"><span>Confirmed</span><span>Downpayment</span><span>Preparing</span><span>Ready</span><span>Completed</span></div>
+
+            <div class="summary-box">
+                <div class="summary-row"><span class="muted">Pick-up</span><span id="t-pickup">Oct 5, 2:00 PM</span></div>
+                <div class="summary-row"><span class="muted">Balance</span><span id="t-balance">₱1,750.00 due</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= STUB PAGES ================= -->
+    <section class="page" id="page-home"><div class="card"><p class="stub-note">Home module</p></div></section>
+    <section class="page" id="page-menu"><div class="card"><p class="stub-note">Menu module</p></div></section>
+    <section class="page" id="page-customization"><div class="card"><p class="stub-note">Customization module</p></div></section>
+
+    <!-- ================= CUSTOMER INFORMATION PAGE ================= -->
+    <section class="page" id="page-customerinfo"><div class="card"><p class="stub-note">Customer Info module</p></div></section>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    // Module selection only: switches between UI sections.
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', function () {
+            document.querySelectorAll('.nav-links a').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            this.classList.add('active');
+
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            const selectedPage = document.getElementById('page-' + this.dataset.page);
+            if (selectedPage) {
+                selectedPage.classList.add('active');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
